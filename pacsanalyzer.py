@@ -8,8 +8,8 @@ parser.add_argument("host", help="Hostaddress of the pacs server",
                     type=str)
 parser.add_argument("port", help="Port of the pacs server",
                     type=int)
-parser.add_argument("aet", help="AET of the pacs server",
-                    type=str)
+# parser.add_argument("aet", help="AET of the pacs server",
+#                     type=str)
 args = parser.parse_args()
 #print("Querying :",args.host)
 
@@ -27,7 +27,7 @@ ds.StudyTime = ''
 #ds.PatientName = '*'
 ds.InstitutionName = '*'
 
-identifiers=[]
+queryresult=[]
 # Associate with the peer AE at IP 127.0.0.1 and port 11112
 assoc = ae.associate(args.host, args.port)
 if assoc.is_established:
@@ -36,7 +36,8 @@ if assoc.is_established:
     for (status, identifier) in responses:
         if status:
 #            print('C-FIND query status: 0x{0:04X}'.format(status.Status))
-            identifiers.append(identifier)
+            if isinstance(identifier,type(Dataset())):
+                queryresult.append(identifier)
         else:
             print('Connection timed out, was aborted or received invalid response')
     # Release the association
@@ -44,5 +45,5 @@ if assoc.is_established:
 else:
     print('Association rejected, aborted or never connected')
 
-for(identifier) in identifiers:
-    print(identifier)
+for(ds) in queryresult:
+    print(ds.StudyDescription)
